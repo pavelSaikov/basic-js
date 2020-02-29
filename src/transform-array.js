@@ -1,52 +1,30 @@
 module.exports = function transform(arr) {
-    if(!(arr instanceof Array)) throw new Error();
+    if (!(arr instanceof Array)) throw new Error();
 
-    for(let i = 0; i < arr.length; i++) {
-        if(typeof(arr[i]) == 'string') {
-            switch (arr[i]) {
-                case '--discard-next':
-                    if(i + 1 != arr.length)
-                        arr.splice(i + 1, 1);
+    const transformedArr = [];
 
-                    arr.splice(i, 1);
-                    i--;
+    for (let i = 0; i < arr.length; i++) {
+        switch (arr[i]) {
+            case '--discard-next':
+                i++;
+                break;
 
-                    break;
-                
-                case '--discard-prev':
-                    if(i != 0) {
-                        arr.splice(i, 1);
-                        arr.splice(i - 1, 1);
-                        i -= 2;
-                    } else {
-                        arr.splice(i, 1);
-                        i--;
-                    }
+            case '--discard-prev':
+                transformedArr.pop();
+                break;
 
-                    break;
+            case '--double-prev':
+                if (i != 0) transformedArr.push(arr[i - 1]);
+                break;
 
-                case '--double-next':
-                    if(i + 1 != arr.length) {
-                        arr[i] = arr[i + 1];
-                        //i++;
-                    } else {
-                        arr.splice(i, 1);
-                    }
+            case '--double-next':
+                if (i + 1 != arr.length) transformedArr.push(arr[i + 1]);
+                break;
 
-                    break;
-
-                case '--double-prev':
-                    if(i != 0) {
-                        arr[i] = arr[i - 1];
-                    } else {
-                        arr.splice(i, 1);
-                        i--;
-                    }
-
-                    break;
-            }
+            default:
+                transformedArr.push(arr[i]);
         }
     }
 
-    return arr;
+    return transformedArr;
 };
